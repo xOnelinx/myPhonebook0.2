@@ -4,6 +4,9 @@
 
 #PhoneBook
 GET     /               controllers.Application.index
+
+POST    /add            controllers.Application.addContact
+
 GET     /delete/:id     controllers.Application.deleteContact(id: Long)
 
 GET /assets/*file       controllers.Assets.at(path="/public", file)

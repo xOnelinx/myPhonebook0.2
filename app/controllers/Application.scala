@@ -17,6 +17,17 @@ class Application extends Controller{
     }
   }
 
+  def addContact() = Action.async {implicit request =>
+    ContactForm.form.bindFromRequest.fold(
+      errorForm => Future.successful(Ok(views.html.index(errorForm,Seq.empty[Contact]))),
+      data => {
+        val newContact = Contact(0,data.name,data.pnumber)
+        ContactService.addContact(newContact).map(res =>
+        Redirect(routes.Application.index()))
+      }
+    )
+  }
+
   def deleteContact(id:Long) = Action.async{ implicit request =>
     ContactService.deleteContact(id) map{ res =>
       Redirect(routes.Application.index)
