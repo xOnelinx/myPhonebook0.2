@@ -1,0 +1,26 @@
+@(userForm: Form[models.ContactForm],contacts : Seq[models.Contact])(implicit request: RequestHeader)
+
+@main("PhoneBook 0.2") {
+
+    <div class="user-display" >
+        <fieldset>
+            <legend align="center"><h3>PhoneBook 0.2</h3></legend>
+            <table cellspacing="20">
+                <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>pnumber</th>
+                </tr>
+                @for(contact <- contacts){
+                    <tr>
+                        <td>@contact.id</td>
+                        <td>@contact.name</td>
+                        <td>@contact.pnumber</td>
+                        <td><a href="@routes.Application.deleteContact(contact.id)">delete</a></td>
+                    </tr>
+                }
+            </table>
+        </fieldset>
+    </div>
+
+}
