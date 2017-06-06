@@ -3,7 +3,7 @@
 # ~~~~
 
 #PhoneBook
-GET     /               controllers.Application.index
+GET     /               controllers.Application.index(filter ?="")
 
 POST    /add            controllers.Application.addContact
 

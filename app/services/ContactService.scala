@@ -1,12 +1,14 @@
 package services
 
 import models.{Contact, Contacts}
-
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 /**
   * Created by Денис on 05.06.2017.
   */
-object ContactService {
+
+@Singleton
+class ContactService {
 
   def addContact(user: Contact): Future[String] = {
     Contacts.add(user)
@@ -20,7 +22,7 @@ object ContactService {
     Contacts.get(id)
   }
 
-  def listAllContact: Future[Seq[Contact]] = {
-    Contacts.listAll
+  def listContact(filter: String): Future[Seq[Contact]] = {
+    if (filter.equals(""))Contacts.listAll else Contacts.findByFilter(filter)
   }
 }
