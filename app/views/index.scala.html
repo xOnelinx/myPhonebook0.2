@@ -8,8 +8,8 @@
     <h2>New Contact</h2>
 
     @helper.form(action = routes.Application.addContact()){
-    @helper.inputText(contact("name"), '_label -> "Name")
-    @helper.inputText(contact("phoneNumber"), '_label -> "Phone")
+    @helper.inputText(userForm("name"), '_label -> "Name")
+    @helper.inputText(userForm("pnumber"), '_label -> "Phone")
 
     <input type="submit" value="Add" />
 

@@ -25,7 +25,7 @@ object ContactForm {
   val phoneUniqueConstraint: Constraint[String] = Constraint("constraints.uniquePhone")({
     plainText =>
       val errors = plainText match {
-        case phone if !Contacts.isPhoneFree(phone) => Seq(ValidationError(Messages("phoneUniqueError")))
+        case phone if !Contacts.isPhoneFree(phone) => Seq(ValidationError("phone number not unique!"))
         case _ => Nil
       }
       if (errors.isEmpty) {
@@ -73,10 +73,10 @@ object Contacts{
   }
 
   def findByPhone(pnumber: String): Future[Option[Contact]] = {
-    dbConfig.db.run(contacts.filter(_.pnumber == pnumber).result.headOption)
+    dbConfig.db.run(contacts.filter(_.pnumber === pnumber).result.headOption)
   }
   def findByFilter(filter: String): Future[Seq[Contact]] = {
-    dbConfig.db.run(contacts.filter(_.name.toString().contains(filter)).result)
+    dbConfig.db.run(contacts.filter{ _.name.like(filter)}.result)
   }
 
   def isPhoneFree(pnumber: String): Boolean = findByPhone(pnumber).value.isEmpty

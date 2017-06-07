@@ -13,7 +13,6 @@ import services.ContactService
   * Created by Денис on 01.06.2017.
   */
 
-@Singleton
 class Application @Inject()( val messagesApi: MessagesApi, contactService: ContactService, contactForm: ContactForm
                            ) extends Controller with I18nSupport{
 

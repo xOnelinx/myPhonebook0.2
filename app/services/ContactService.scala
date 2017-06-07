@@ -7,7 +7,6 @@ import scala.concurrent.Future
   * Created by Денис on 05.06.2017.
   */
 
-@Singleton
 class ContactService {
 
   def addContact(user: Contact): Future[String] = {
