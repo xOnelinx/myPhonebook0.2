@@ -1,15 +1,15 @@
-@(userForm: Form[models.ContactForm],contacts : Seq[models.Contact],currentFilter: String)(implicit messages: Messages, request: play.api.mvc.RequestHeader)
+@(person: Form[CreatePersonForm])(implicit request: RequestHeader, messages: Messages)
+
 
 @import helper._
-@import play.api.Play.current
-@import play.api.i18n.Messages.Implicits._
+
 @main("PhoneBook 0.2") {
 
     <h2>New Contact</h2>
 
-    @helper.form(action = routes.Application.addContact()){
-    @helper.inputText(userForm("name"), '_label -> "Name")
-    @helper.inputText(userForm("pnumber"), '_label -> "Phone")
+        @form(CSRF(routes.PersonController.addPerson())) {
+        @inputText(person("name"))
+        @inputText(person("age"))
 
     <input type="submit" value="Add" />
 

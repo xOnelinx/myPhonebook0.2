@@ -19,32 +19,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 case class Contact(id: Long, name: String, pnumber: String)
 
-case class ContactForm(name: String, pnumber: String)
-
-object ContactForm {
-  val phoneUniqueConstraint: Constraint[String] = Constraint("constraints.uniquePhone")({
-    plainText =>
-      val errors = plainText match {
-        case phone if !Contacts.isPhoneFree(phone) => Seq(ValidationError("phone number not unique!"))
-        case _ => Nil
-      }
-      if (errors.isEmpty) {
-        Valid
-      } else {
-        Invalid(errors)
-      }
-  })
-  val phoneFormat = """^(\+)?\d{5,15}$""".r
-  val form = Form(
-    mapping(
-      "name" -> nonEmptyText,
-      "pnumber" -> nonEmptyText.verifying(Constraints.pattern(phoneFormat),phoneUniqueConstraint)
-    )(ContactForm.apply)(ContactForm.unapply)
-  )
-}
+case class ContactForm (name: String, pnumber: String)
 
 class ContactTable(tag: Tag) extends Table[Contact](tag, "Contact"){
-  def id = column[Long]("id",O.PrimaryKey,O.AutoInc)
+  def id = column [Long]("id",O.PrimaryKey,O.AutoInc)
   def name = column[String]("name")
   def pnumber = column[String]("pnumber")
 
