@@ -5,7 +5,6 @@ import play.api.mvc._
 import play.api.i18n._
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.data.validation.Constraints._
 import play.api.libs.json.Json
 import models._
 import dal._
@@ -13,7 +12,7 @@ import dal._
 import scala.concurrent.{ExecutionContext, Future}
 import javax.inject._
 
-import play.api.data.validation.Constraints
+import play.api.data.validation._
 
 class PersonController @Inject() (repo: PersonRepository, val messagesApi: MessagesApi)
                                  (implicit ec: ExecutionContext) extends Controller with I18nSupport{
@@ -24,20 +23,34 @@ class PersonController @Inject() (repo: PersonRepository, val messagesApi: Messa
 
   val phoneFormat = """^(\+)?\d{5,15}$""".r
 
+  val phoneUniqueConstraint: Constraint[String] = Constraint("the phone number must be unique")({
+    plainText =>
+      val errors = plainText match {
+        case phone if !repo.isPhoneFree(phone) => Seq(ValidationError(Messages("number is not unique")))
+        case phoneFormat() => Seq(ValidationError(Messages("incorrect number format")))
+        case _ => Nil
+      }
+      if (errors.isEmpty) {
+        Valid
+      } else {
+        Invalid(errors)
+      }
+  })
+
+
+
 
   val personForm: Form[CreatePersonForm] = Form {
     mapping(
-      "name" -> nonEmptyText,
-      "phone" -> nonEmptyText.verifying(Constraints.pattern(phoneFormat))
+      "name" -> nonEmptyText(3),
+      "phone" -> nonEmptyText.verifying(Constraints.pattern(phoneFormat,"use numbers"),phoneUniqueConstraint)
     )(CreatePersonForm.apply)(CreatePersonForm.unapply)
   }
 
   /**
     * The index action.
     */
-//  def index = Action { implicit request =>
-//    Ok(views.html.index(personForm))
-//  }
+
   def index (filter: String) = Action.async { implicit request =>
     repo.list() map { persons =>
       Ok(views.html.index(personForm,persons,filter))

@@ -1,12 +1,13 @@
 package dal
 
-import javax.inject.{ Inject, Singleton }
+import javax.inject.{Inject, Singleton}
+
 import play.api.db.slick.DatabaseConfigProvider
 import slick.driver.JdbcProfile
-
 import models.Person
 
-import scala.concurrent.{ Future, ExecutionContext }
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 /**
   * A repository for people.
@@ -83,12 +84,12 @@ class PersonRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(impl
   }
 
   def findByPhone(phone: String): Future[Option[Person]] = {
-    dbConfig.db.run(people.filter(_.phone === phone).result.headOption)
+    dbConfig.db.run(people.filter(_.phone.like(phone)).result.headOption)
   }
   def findByFilter(filter: String): Future[Seq[Person]] = {
     dbConfig.db.run(people.filter{ _.name.like(filter)}.result)
   }
-
-  def isPhoneFree(phone: String): Boolean = findByPhone(phone).value.isEmpty
+  val duration = Duration(500, "millis")
+  def isPhoneFree(phone: String): Boolean = Await.result(findByPhone(phone),duration ).isEmpty //здесь кончается асинхронность
 
 }
