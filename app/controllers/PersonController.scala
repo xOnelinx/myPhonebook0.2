@@ -27,7 +27,6 @@ class PersonController @Inject() (repo: PersonRepository, val messagesApi: Messa
     plainText =>
       val errors = plainText match {
         case phone if !repo.isPhoneFree(phone) => Seq(ValidationError(Messages("number is not unique")))
-        case phoneFormat() => Seq(ValidationError(Messages("incorrect number format")))
         case _ => Nil
       }
       if (errors.isEmpty) {
@@ -52,7 +51,7 @@ class PersonController @Inject() (repo: PersonRepository, val messagesApi: Messa
     */
 
   def index (filter: String) = Action.async { implicit request =>
-    repo.list() map { persons =>
+    repo.findByFilter(filter = ("%" + filter + "%")) map { persons =>
       Ok(views.html.index(personForm,persons,filter))
     }
   }

@@ -16,7 +16,14 @@
     }
 
     <h2>Phone Book 0.3</h2>
+    @form(action=routes.PersonController.index()) {
+        <div id="search-container">
+            <input type="search" class="form-control" id="search-box" name="filter"
+            autocomplete="off" value="@Filter" placeholder="name">
+        </div>
+        <input type="submit" id="search-submit" value="show" class="btn primary btn-success">
 
+    }
 
     <fieldset>
         <legend align="center"><h3>PhoneBook 0.2</h3></legend>
