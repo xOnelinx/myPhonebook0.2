@@ -10,9 +10,10 @@ import play.api.libs.json.Json
 import models._
 import dal._
 
-import scala.concurrent.{ ExecutionContext, Future }
-
+import scala.concurrent.{ExecutionContext, Future}
 import javax.inject._
+
+import play.api.data.validation.Constraints
 
 class PersonController @Inject() (repo: PersonRepository, val messagesApi: MessagesApi)
                                  (implicit ec: ExecutionContext) extends Controller with I18nSupport{
@@ -34,8 +35,13 @@ class PersonController @Inject() (repo: PersonRepository, val messagesApi: Messa
   /**
     * The index action.
     */
-  def index = Action { implicit request =>
-    Ok(views.html.index(personForm))
+//  def index = Action { implicit request =>
+//    Ok(views.html.index(personForm))
+//  }
+  def index (filter: String) = Action.async { implicit request =>
+    repo.list() map { persons =>
+      Ok(views.html.index(personForm,persons,filter))
+    }
   }
 
   /**
@@ -50,26 +56,24 @@ class PersonController @Inject() (repo: PersonRepository, val messagesApi: Messa
       // We also wrap the result in a successful future, since this action is synchronous, but we're required to return
       // a future because the person creation function returns a future.
       errorForm => {
-        Future.successful(Ok(views.html.index(errorForm)))
+        Future.successful(Ok(views.html.index(errorForm,Seq.empty[Person],"")))
       },
       // There were no errors in the from, so create the person.
       person => {
         repo.create(person.name, person.phone).map { _ =>
           // If successful, we simply redirect to the index page.
-          Redirect(routes.PersonController.index)
+          Redirect(routes.PersonController.index(""))
         }
       }
     )
   }
 
-  /**
-    * A REST endpoint that gets all the people as JSON.
-    */
-  def getPersons = Action.async {
-    repo.list().map { people =>
-      Ok(Json.toJson(people))
+  def delete (id: Long) = Action.async{implicit request =>
+    repo.delete(id) map{res =>
+      Redirect(routes.PersonController.index())
     }
   }
+
 }
 
 /**

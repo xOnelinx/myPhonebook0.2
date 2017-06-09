@@ -26,16 +26,16 @@ class PersonRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(impl
   /**
     * Here we define the table. It will have a name of people
     */
-  private class PeopleTable(tag: Tag) extends Table[Person](tag, "people") {
+  private class PeopleTable(tag: Tag) extends Table[Person](tag, "PEOPLE") {
 
     /** The ID column, which is the primary key, and auto incremented */
-    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
 
     /** The name column */
-    def name = column[String]("name")
+    def name = column[String]("NAME")
 
     /** The age column */
-    def phone = column[String]("age")
+    def phone = column[String]("PHONE")
 
     /**
       * This is the tables default "projection".
@@ -77,4 +77,18 @@ class PersonRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(impl
   def list(): Future[Seq[Person]] = db.run {
     people.result
   }
+
+  def delete(id: Long): Future[Int] = {
+    dbConfig.db.run(people.filter(_.id === id).delete)
+  }
+
+  def findByPhone(phone: String): Future[Option[Person]] = {
+    dbConfig.db.run(people.filter(_.phone === phone).result.headOption)
+  }
+  def findByFilter(filter: String): Future[Seq[Person]] = {
+    dbConfig.db.run(people.filter{ _.name.like(filter)}.result)
+  }
+
+  def isPhoneFree(phone: String): Boolean = findByPhone(phone).value.isEmpty
+
 }

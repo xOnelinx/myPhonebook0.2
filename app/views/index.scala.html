@@ -1,4 +1,4 @@
-@(person: Form[CreatePersonForm])(implicit request: RequestHeader, messages: Messages)
+@(person: Form[CreatePersonForm],persons: Seq[Person],Filter: String)(implicit request: RequestHeader, messages: Messages)
 
 
 @import helper._
@@ -9,41 +9,32 @@
 
         @form(CSRF(routes.PersonController.addPerson())) {
         @inputText(person("name"))
-        @inputText(person("age"))
+        @inputText(person("phone"))
 
     <input type="submit" value="Add" />
 
     }
 
+    <h2>Phone Book 0.3</h2>
 
 
-    <div class="user-display" >
-        @form(action=routes.Application.index()) {
-        <div>
-            <input type="search" class="form-control" id="search-box" name="filter"
-                   autocomplete="off" value="@currentFilter" placeholder="enter name">
-            <input type="submit" value="Filter" >
-        </div>
-        }
-
-        <fieldset>
-            <legend align="center"><h3>PhoneBook 0.2</h3></legend>
-            <table cellspacing="20">
-                <tr>
-                    <th>id</th>
-                    <th>name</th>
-                    <th>pnumber</th>
-                </tr>
-                @for(contact <- contacts){
-                    <tr>
-                        <td>@contact.id</td>
-                        <td>@contact.name</td>
-                        <td>@contact.pnumber</td>
-                        <td><a href="@routes.Application.deleteContact(contact.id)">delete</a></td>
-                    </tr>
-                }
-            </table>
-        </fieldset>
-    </div>
+    <fieldset>
+        <legend align="center"><h3>PhoneBook 0.2</h3></legend>
+        <table cellspacing="20">
+            <tr>
+                <th>id</th>
+                <th>name</th>
+                <th>phone</th>
+            </tr>
+            @for(person <- persons){
+            <tr>
+                <td>@person.id</td>
+                <td>@person.name</td>
+                <td>@person.phone</td>
+                <td><a href="@routes.PersonController.delete(person.id)">delete</a></td>
+            </tr>
+            }
+        </table>
+    </fieldset>
 
 }
