@@ -3,30 +3,32 @@
 
 @import helper._
 
-@main("PhoneBook 0.2") {
+@main("PhoneBook 0.3") {
 
     <h2>New Contact</h2>
 
         @form(CSRF(routes.PersonController.addPerson())) {
-        @inputText(person("name"))
-        @inputText(person("phone"))
+        @inputText(person("name"),'placeholder -> "name")
+        @inputText(person("phone"),'placeholder -> "phone number")
 
-    <input type="submit" value="Add" />
+    <input type="submit" value="Add" class="btn primary btn-success">
 
     }
 
-    <h2>Phone Book 0.3</h2>
     @form(action=routes.PersonController.index()) {
+
+        <h3>Search </h3>
         <div id="search-container">
             <input type="search" class="form-control" id="search-box" name="filter"
             autocomplete="off" value="@Filter" placeholder="name">
+            <input type="submit" id="search-submit" value="show" class="btn primary btn-success">
         </div>
-        <input type="submit" id="search-submit" value="show" class="btn primary btn-success">
+
 
     }
 
     <fieldset>
-        <legend align="center"><h3>PhoneBook 0.2</h3></legend>
+        <legend align="center"><h3>List of contacts</h3></legend>
         <table cellspacing="20">
             <tr>
                 <th>id</th>
