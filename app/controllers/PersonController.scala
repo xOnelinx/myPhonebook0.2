@@ -7,10 +7,12 @@ import play.api.data.Forms._
 import models._
 import dal._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 import javax.inject._
 
 import play.api.data.validation._
+
+import scala.concurrent.duration.Duration
 
 class PersonController @Inject() (repo: PersonRepository, val messagesApi: MessagesApi)
                                  (implicit ec: ExecutionContext) extends Controller with I18nSupport{
@@ -41,7 +43,7 @@ class PersonController @Inject() (repo: PersonRepository, val messagesApi: Messa
 
   val personForm: Form[CreatePersonForm] = Form {
     mapping(
-      "name" -> nonEmptyText(3),
+      "name" -> nonEmptyText(3,30),
       "phone" -> nonEmptyText.verifying(Constraints.pattern(phoneFormat,"use numbers","use + and numbers"),phoneUniqueConstraint)
     )(CreatePersonForm.apply)(CreatePersonForm.unapply)
   }
@@ -61,7 +63,8 @@ class PersonController @Inject() (repo: PersonRepository, val messagesApi: Messa
   def addPerson = Action.async { implicit request =>
     personForm.bindFromRequest.fold(
       errorForm => {
-        Future.successful(Ok(views.html.index(errorForm,Seq.empty[Person],"")))
+        val persons =Await.result(repo.list(),Duration(500,"millis"))
+        Future.successful(Ok(views.html.index(errorForm,persons,"")))  //не знаю как это сделать подругому( но узнаю..
       },
       person => {
         repo.create(person.name, person.phone).map { _ =>
