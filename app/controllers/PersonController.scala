@@ -44,7 +44,7 @@ class PersonController @Inject() (repo: PersonRepository, val messagesApi: Messa
   val personForm: Form[CreatePersonForm] = Form {
     mapping(
       "name" -> nonEmptyText(3,30),
-      "phone" -> nonEmptyText.verifying(Constraints.pattern(phoneFormat,"use numbers","use + and numbers"),phoneUniqueConstraint)
+      "phone" -> nonEmptyText.verifying(Constraints.pattern(phoneFormat,"use numbers","only \"+\" and 14 numbers"),phoneUniqueConstraint)
     )(CreatePersonForm.apply)(CreatePersonForm.unapply)
   }
 
